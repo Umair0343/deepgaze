@@ -28,7 +28,9 @@ class TestDiffMotionDetector:
         foreground_image = cv2.imread('foreground.jpg')
         detector.setBackground(background_image)
         binary_image = detector.returnMask(foreground_image)
-        assert detector.getBackground() is not None and binary_image is not None
+        assert detector.getBackground() is not None, "Background should be set"
+        assert binary_image is not None, "Binary image should be generated"
+        assert binary_image.shape == foreground_image.shape, "Binary image should match the shape of the foreground image"
 
     # Tests that setting a None background image returns None
     def test_set_none_background_image_and_return_none(self):
