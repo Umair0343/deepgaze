@@ -2,14 +2,62 @@
 from deepgaze.deepgaze.motion_detection import DiffMotionDetector
 import cv2
 
-
 import pytest
 
 class TestDiffMotionDetector:
-
     # Tests that the background image is set successfully
     def test_set_background_successfully(self):
         detector = DiffMotionDetector()
         background_image = cv2.imread('background.jpg')
         detector.setBackground(background_image)
         assert detector.getBackground() is not None
+
+    # Tests that a binary image is returned successfully after the detection process
+    def test_return_binary_image_successfully(self):
+        detector = DiffMotionDetector()
+        @pytest.fixture(scope="module")
+        def loaded_images():
+            background_image = cv2.imread('background.jpg')
+            foreground_image = cv2.imread('foreground.jpg')
+            return background_image, foreground_image
+
+        def test_return_binary_image_successfully(self, loaded_images):
+            detector = DiffMotionDetector()
+            background_image, foreground_image = loaded_images
+            detector.setBackground(background_image)
+            binary_image = detector.returnMask(foreground_image)
+            assert binary_image is not None
+        detector.setBackground(background_image)
+        binary_image = detector.returnMask(foreground_image)
+        assert binary_image is not None
+
+    # Tests that a background image is set and a binary image is returned successfully after the detection process
+    def test_set_background_and_return_binary_image_successfully(self):
+        detector = DiffMotionDetector()
+        background_image = cv2.imread('background.jpg')
+        foreground_image = cv2.imread('foreground.jpg')
+        detector.setBackground(background_image)
+        binary_image = detector.returnMask(foreground_image)
+        assert detector.getBackground() is not None, "Background should be set"
+        assert binary_image is not None, "Binary image should be generated"
+        assert binary_image.shape == foreground_image.shape, "Binary image should match the shape of the foreground image"
+
+    # Tests that setting a None background image returns None
+    def test_set_none_background_image_and_return_none(self):
+        detector = DiffMotionDetector()
+        detector.setBackground(None)
+        assert detector.getBackground() is None
+
+    # Tests that setting a None foreground image returns None
+    def test_set_none_foreground_image_and_return_none(self):
+        detector = DiffMotionDetector()
+        background_image = cv2.imread('background.jpg')
+        detector.setBackground(background_image)
+        binary_image = detector.returnMask(None)
+        assert binary_image is None
+
+    # Tests that setting a None background image returns None after the detection process
+    def test_set_none_background_image_and_return_none_after_detection_process(self):
+        detector = DiffMotionDetector()
+        detector.setBackground(None)
+        assert detector.getBackground() is None
