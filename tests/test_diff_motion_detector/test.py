@@ -15,8 +15,18 @@ class TestDiffMotionDetector:
     # Tests that a binary image is returned successfully after the detection process
     def test_return_binary_image_successfully(self):
         detector = DiffMotionDetector()
-        background_image = cv2.imread('background.jpg')
-        foreground_image = cv2.imread('foreground.jpg')
+        @pytest.fixture(scope="module")
+        def loaded_images():
+            background_image = cv2.imread('background.jpg')
+            foreground_image = cv2.imread('foreground.jpg')
+            return background_image, foreground_image
+
+        def test_return_binary_image_successfully(self, loaded_images):
+            detector = DiffMotionDetector()
+            background_image, foreground_image = loaded_images
+            detector.setBackground(background_image)
+            binary_image = detector.returnMask(foreground_image)
+            assert binary_image is not None
         detector.setBackground(background_image)
         binary_image = detector.returnMask(foreground_image)
         assert binary_image is not None
